@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { SiDevpost } from 'react-icons/si';
