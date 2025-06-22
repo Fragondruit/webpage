@@ -93,3 +93,16 @@
 .App-social-icons a:hover {
   color: #1da1f2;
 }
+
+#starfield {
+  animation: rotate-starfield 120s linear infinite;
+}
+
+@keyframes rotate-starfield {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

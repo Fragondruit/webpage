@@ -1,3 +1,4 @@
+import Starfield from 'react-starfield';
 import './App.css';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { SiDevpost } from 'react-icons/si';
@@ -5,6 +6,12 @@ import { SiDevpost } from 'react-icons/si';
 function App() {
   return (
     <div className="App" style={{ display: 'flex', minHeight: '100vh' }}>
+      <Starfield
+        starCount={2000}
+        starColor={[255, 255, 255]}
+        speedFactor={0.05}
+        backgroundColor="black"
+      />
       <nav className="App-menu">
         <ul>
           <li>Background</li>
