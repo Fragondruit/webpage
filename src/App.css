@@ -100,9 +100,9 @@
 
 @keyframes rotate-starfield {
   from {
-    transform: rotate(0deg) scale(1.2);
+    transform: rotate(0deg) scale(1.3);
   }
   to {
-    transform: rotate(360deg) scale(1.2);
+    transform: rotate(360deg) scale(1.3);
   }
 }
