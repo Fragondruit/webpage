@@ -1,80 +1,49 @@
-########################################################
-# Release script for the project
-#
-# Usage:
-#   ./release.sh [--dry-run] [--major] [--minor] [--patch]
-#
-# Options:
-#   --dry-run: Run the script without making any changes
-########################################################
-
+# Parse arguments for dry-run and bump type
 DRY_RUN=false
-VERSION_BUMP="patch"
+BUMP_TYPE="--patch" # default bump type
 
-for arg in "$@"; do
-  case $arg in
-    --dry-run)
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -d|--dry-run)
       DRY_RUN=true
+      shift
       ;;
-    --major)
-      VERSION_BUMP="major"
+    --major|--minor|--patch)
+      BUMP_TYPE="$1"
+      shift
       ;;
-    --minor)
-      VERSION_BUMP="minor"
-      ;;
-    --patch)
-      VERSION_BUMP="patch"
+    *)
+      shift
       ;;
   esac
 done
 
-current_branch=$(git branch --show-current);
-if [ "$current_branch" != "main" ]; then
-    echo "You are not on the main branch";
-    exit 1;
+SEMVER_BIN=$(which semver)
+
+if [ -z "$SEMVER_BIN" ]; then
+  echo "Error: 'semver' command not found. Please install it and try again."
+  exit 1
+fi
+
+# Get the latest semantic version tag (sorted as versions, not lexicographically)
+LATEST_TAG=$(git tag --list | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+
+# Increment the version using semver tool based on bump type
+if [ -n "$LATEST_TAG" ]; then
+  NEXT_VERSION=$($SEMVER_BIN $BUMP_TYPE "$LATEST_TAG")
+else
+  # If no tags exist, start at 1.0.0
+  NEXT_VERSION="1.0.0"
 fi
 
 if [ "$DRY_RUN" = true ]; then
-  echo "[DRY RUN] git pull origin main"
+  if [ -n "$LATEST_TAG" ]; then
+    echo "[DRY RUN] Current version: $LATEST_TAG"
+  else
+    echo "[DRY RUN] No previous version tag found."
+  fi
+  echo "[DRY RUN] Next version would be: $NEXT_VERSION"
 else
-  git pull origin main;
+  git tag "$NEXT_VERSION";
+  echo "Updated current release to $NEXT_VERSION."
 fi
-
-if [ "$DRY_RUN" = true ]; then
-  echo "[DRY RUN] npm run build"
-  BUILD_STATUS=0
-else
-  npm run build;
-  BUILD_STATUS=$?
-fi
-
-if [ $BUILD_STATUS -ne 0 ]; then
-    echo "Build failed";
-    exit 1;
-fi
-
-if [ "$DRY_RUN" = true ]; then
-  echo "[DRY RUN] git push origin main"
-else
-  git push origin main;
-fi
-
-version=$(git tag | sort -V | tail -n 1);
-if [ "$version" = "" ]; then
-  echo "No version found";
-  exit 2;
-fi
-
-version=$(tools/semver --$VERSION_BUMP $version);
-echo "Bumping version to $version";
-
-
-if [ "$DRY_RUN" = true ]; then
-  echo "[DRY RUN] git tag -a \"$version\" -m \"Release $version\""
-  echo "[DRY RUN] git push origin $version"
-else
-  git tag -a "$version" -m "Release $version";
-  git push origin "$version"; 
-fi
-
-echo "Release complete";
