@@ -36,6 +36,9 @@ function App() {
               <SiDevpost size={36} />
             </a>
           </div>
+          <a href="/resume.pdf" download="resume.pdf" className="App-resume-link">
+            Download Resume
+          </a>
         </header>
       </main>
     </div>
