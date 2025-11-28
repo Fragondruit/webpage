@@ -4,6 +4,16 @@ import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { SiDevpost } from 'react-icons/si';
 
 function App() {
+  const handleResumeDownload = (e) => {
+    e.preventDefault();
+    const link = document.createElement('a');
+    link.href = '/Resume.pdf';
+    link.download = 'Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="App" style={{ display: 'flex', minHeight: '100vh' }}>
       <Starfield
@@ -36,7 +46,7 @@ function App() {
               <SiDevpost size={36} />
             </a>
           </div>
-          <a href="/resume.pdf" download="resume.pdf" className="App-resume-link">
+          <a href="/Resume.pdf" onClick={handleResumeDownload} download="Resume.pdf" className="App-resume-link">
             Download Resume
           </a>
         </header>
